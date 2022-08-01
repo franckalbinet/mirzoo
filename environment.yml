@@ -1,0 +1,8 @@
+name: mirzoo
+channels:
+  - conda-forge
+  - fastchan
+  - pytorch
+dependencies:
+  - nbdev
+  - jupyterlab

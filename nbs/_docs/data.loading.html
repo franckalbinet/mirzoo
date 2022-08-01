@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Utility function to load MIRS spectra (target) and wet chemistry">
+
+<title>mirzoo - Loading</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="mirzoo - Loading">
+<meta property="og:description" content="Utility function to load MIRS spectra (target) and wet chemistry">
+<meta property="og:site-name" content="mirzoo">
+<meta name="twitter:title" content="mirzoo - Loading">
+<meta name="twitter:description" content="Utility function to load MIRS spectra (target) and wet chemistry">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">mirzoo</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/franckalbinet/mirzoo/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-reader-toggle nav-link" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Loading</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Mirzoo</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.loading.html" class="sidebar-item-text sidebar-link active">Loading</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data.transform.html" class="sidebar-item-text sidebar-link">Transform</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vis.core.html" class="sidebar-item-text sidebar-link">Visualization</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_workflow.plsr_local.pynb.html" class="sidebar-item-text sidebar-link">PLSR local models</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_workflow.eda.html" class="sidebar-item-text sidebar-link">Exploratory Data Analysis</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Loading</h1>
+</div>
+
+<div>
+  <div class="description">
+    Utility function to load MIRS spectra (target) and wet chemistry
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#hide</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nbdev.showdoc <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="1">
+<hr>
+<section id="get_spectra" class="level4">
+<h4 class="anchored" data-anchor-id="get_spectra">get_spectra</h4>
+<blockquote class="blockquote">
+<pre><code> get_spectra (fname:str, org_name:str='organization',
+              id_name:str='sample_id',
+              wn_colrange:List[int]=range(2,1703))</code></pre>
+</blockquote>
+<p>Loads spectra (features) &amp; associated wavenumbers, organization name, sample ids</p>
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fname</td>
+<td>str</td>
+<td></td>
+<td>folder path containing data</td>
+</tr>
+<tr class="even">
+<td>org_name</td>
+<td>str</td>
+<td>organization</td>
+<td>column name containing name of the organization</td>
+</tr>
+<tr class="odd">
+<td>id_name</td>
+<td>str</td>
+<td>sample_id</td>
+<td>column name containing name of the organization</td>
+</tr>
+<tr class="even">
+<td>wn_colrange</td>
+<td>List</td>
+<td>range(2, 1703)</td>
+<td>column indices of wavenumbers</td>
+</tr>
+</tbody>
+</table>
+</section>
+</div>
+</div>
+<div class="cell" data-execution_count="125">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fname <span class="op">=</span> <span class="st">'./files/RT_STD_allMIRspectra_raw.csv'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>orgs, smp_ids, wns, spectra, df <span class="op">=</span> get_spectra(fname)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="126">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="126">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>organization</th>
+      <th>sample_id</th>
+      <th>600</th>
+      <th>602</th>
+      <th>604</th>
+      <th>606</th>
+      <th>608</th>
+      <th>610</th>
+      <th>612</th>
+      <th>614</th>
+      <th>...</th>
+      <th>3982</th>
+      <th>3984</th>
+      <th>3986</th>
+      <th>3988</th>
+      <th>3990</th>
+      <th>3992</th>
+      <th>3994</th>
+      <th>3996</th>
+      <th>3998</th>
+      <th>4000</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Agrocares</td>
+      <td>RT_01</td>
+      <td>2.14711</td>
+      <td>2.13471</td>
+      <td>2.12274</td>
+      <td>2.11369</td>
+      <td>2.10487</td>
+      <td>2.09844</td>
+      <td>2.09177</td>
+      <td>2.08036</td>
+      <td>...</td>
+      <td>1.09917</td>
+      <td>1.09898</td>
+      <td>1.09877</td>
+      <td>1.09851</td>
+      <td>1.09827</td>
+      <td>1.09811</td>
+      <td>1.09797</td>
+      <td>1.09797</td>
+      <td>1.09797</td>
+      <td>1.09797</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Agrocares</td>
+      <td>RT_02</td>
+      <td>2.32404</td>
+      <td>2.33516</td>
+      <td>2.34558</td>
+      <td>2.35114</td>
+      <td>2.35641</td>
+      <td>2.35855</td>
+      <td>2.36069</td>
+      <td>2.36288</td>
+      <td>...</td>
+      <td>1.24065</td>
+      <td>1.24042</td>
+      <td>1.24015</td>
+      <td>1.23977</td>
+      <td>1.23938</td>
+      <td>1.23896</td>
+      <td>1.23861</td>
+      <td>1.23861</td>
+      <td>1.23861</td>
+      <td>1.23861</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Agrocares</td>
+      <td>RT_03</td>
+      <td>2.50423</td>
+      <td>2.50755</td>
+      <td>2.50973</td>
+      <td>2.50403</td>
+      <td>2.49913</td>
+      <td>2.50261</td>
+      <td>2.50697</td>
+      <td>2.52910</td>
+      <td>...</td>
+      <td>1.25036</td>
+      <td>1.24959</td>
+      <td>1.24877</td>
+      <td>1.24777</td>
+      <td>1.24679</td>
+      <td>1.24585</td>
+      <td>1.24505</td>
+      <td>1.24505</td>
+      <td>1.24505</td>
+      <td>1.24505</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Agrocares</td>
+      <td>RT_04</td>
+      <td>2.30902</td>
+      <td>2.29788</td>
+      <td>2.28667</td>
+      <td>2.27490</td>
+      <td>2.26393</td>
+      <td>2.26128</td>
+      <td>2.25905</td>
+      <td>2.26521</td>
+      <td>...</td>
+      <td>1.15192</td>
+      <td>1.15176</td>
+      <td>1.15158</td>
+      <td>1.15132</td>
+      <td>1.15106</td>
+      <td>1.15080</td>
+      <td>1.15058</td>
+      <td>1.15058</td>
+      <td>1.15058</td>
+      <td>1.15058</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Agrocares</td>
+      <td>RT_05</td>
+      <td>2.28727</td>
+      <td>2.28852</td>
+      <td>2.29013</td>
+      <td>2.29434</td>
+      <td>2.29856</td>
+      <td>2.30286</td>
+      <td>2.30700</td>
+      <td>2.30782</td>
+      <td>...</td>
+      <td>1.16109</td>
+      <td>1.16106</td>
+      <td>1.16102</td>
+      <td>1.16095</td>
+      <td>1.16086</td>
+      <td>1.16070</td>
+      <td>1.16056</td>
+      <td>1.16056</td>
+      <td>1.16056</td>
+      <td>1.16056</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 1703 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="127">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'orgs: </span><span class="sc">{</span>orgs<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'smp_ids: </span><span class="sc">{</span>smp_ids<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'wns: </span><span class="sc">{</span>wns<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'spectra shape: </span><span class="sc">{</span>spectra<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>orgs: ['Agrocares' 'Agrocares' 'Agrocares' ... 'Woodwell_vertex'
+ 'Woodwell_vertex' 'Woodwell_vertex']
+smp_ids: ['RT_01' 'RT_02' 'RT_03' ... 'RT_68' 'RT_69' 'RT_70']
+wns: [ 600  602  604 ... 3996 3998 4000]
+spectra shape: (1118, 1701)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="2">
+<hr>
+<section id="get_wetchem" class="level4">
+<h4 class="anchored" data-anchor-id="get_wetchem">get_wetchem</h4>
+<blockquote class="blockquote">
+<pre><code> get_wetchem (fname:str, analyte:str='clay_perc', dropna:bool=True)</code></pre>
+</blockquote>
+<p>Loads wet chemistry (target)</p>
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fname</td>
+<td>str</td>
+<td></td>
+<td>folder path containing data</td>
+</tr>
+<tr class="even">
+<td>analyte</td>
+<td>str</td>
+<td>clay_perc</td>
+<td>analyte name</td>
+</tr>
+<tr class="odd">
+<td>dropna</td>
+<td>bool</td>
+<td>True</td>
+<td>whether or not you want to get rid of NaN values</td>
+</tr>
+</tbody>
+</table>
+</section>
+</div>
+</div>
+<div class="cell" data-execution_count="153">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fname <span class="op">=</span> <span class="st">'./files/RT_wetchem_soildata.csv'</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>y, y_napt, df <span class="op">=</span> get_wetchem(fname)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="137">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="137">
+<pre><code>(70, 8)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="158">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="158">
+<pre><code>array([ 6.28199   ,  4.44442   , 42.19991   , 17.10475   , 17.22985   ,
+       18.20389   , 17.07796   , 27.46067   , 12.91032   , 21.88833   ,
+       17.47756   , 41.04345   , 16.95715   ,  5.1238    , 15.98527   ,
+       21.40597   , 21.31223   , 21.5113    , 21.0915    , 38.90257   ,
+        2.19527   , 27.65285   ,  0.92417   , 12.71177   , 12.99189   ,
+       27.1811    , 26.85221   , 21.51316   , 21.31897   , 21.2085    ,
+       20.96345   , 39.79006   , 43.33046   , 24.97947   , 16.73154   ,
+       12.85499   , 13.04752   , 27.75883   , 36.70255   , 16.00733   ,
+       15.95912   , 22.71649246, 33.13734   ,  0.        , 39.87246   ,
+       41.92131   , 39.77298   , 30.38773   , 32.40552   , 17.04644   ,
+       18.67273   , 34.20548   , 39.75466   , 35.47979   , 43.45771   ,
+       17.35687   , 18.76691   , 29.71495   , 31.81229   , 15.38471   ])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="159">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>y_napt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="159">
+<pre><code>array([15.2,  4.1, 26.9,  3.6, 19.1, 25. , 28.4, 20. , 49.3,  8.4])</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
